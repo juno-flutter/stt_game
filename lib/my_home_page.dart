@@ -1,9 +1,11 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:stt_game/word_list_controller.dart';
+// import 'color_schemes.g.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -28,13 +30,15 @@ class MyHomePageState extends State<MyHomePage> {
   /// This has to happen only once per app
   void _initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
-    setState(() {});
   }
 
   /// Each time to start a speech recognition session
-  void _startListening() async {
-    await _speechToText.listen(onResult: _onSpeechResult);
-    setState(() {});
+  void _startListening() {
+    _speechToText.listen(
+      onResult: _onSpeechResult,
+      cancelOnError: true,
+      partialResults: false,
+    );
   }
 
   /// Manually stop the active speech recognition session
@@ -43,38 +47,37 @@ class MyHomePageState extends State<MyHomePage> {
   /// listen method.
   void _stopListening() async {
     await _speechToText.stop();
-    setState(() {});
   }
 
   /// This is the callback that the SpeechToText plugin calls when
   /// the platform returns recognized words.
   void _onSpeechResult(SpeechRecognitionResult result) {
-    // setState(() {
-    if (result.finalResult) {
-      _lastWords = result.recognizedWords;
-      bool ret = wordListController.addWordList(word: _lastWords);
-      if (ret == false) {
-        Get.defaultDialog(
-          title: '\'$_lastWords\'',
-          content: Row(
-            children: const [
-              Icon(Icons.error_outline),
-              SizedBox(
-                width: 2,
-              ),
-              Text('이미 있습니다. 다른 낱말을 말해 보세요.'),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () => Get.back(),
-              child: const Text('OK'),
+    setState(() {
+      if (result.finalResult) {
+        _lastWords = result.recognizedWords;
+        bool ret = wordListController.addWordList(word: _lastWords);
+        if (ret == false) {
+          Get.defaultDialog(
+            title: '\'$_lastWords\'',
+            content: Row(
+              children: const [
+                Icon(Icons.error_outline),
+                SizedBox(
+                  width: 2,
+                ),
+                Text('이미 있습니다. 다른 낱말을 말해 보세요.'),
+              ],
             ),
-          ],
-        );
+            actions: [
+              ElevatedButton(
+                onPressed: () => Get.back(),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        }
       }
-    }
-    // });
+    });
   }
 
   @override
@@ -109,6 +112,7 @@ class MyHomePageState extends State<MyHomePage> {
         padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
         child: GetX<WordListController>(builder: (controller) {
           return GridView.builder(
+            shrinkWrap: true,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               childAspectRatio: 2.5,
@@ -117,89 +121,77 @@ class MyHomePageState extends State<MyHomePage> {
             ),
             itemCount: controller.wordItems.length,
             itemBuilder: (_, index) {
-              return Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  backgroundBlendMode: BlendMode.color,
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.white,
-                      Colors.yellow.shade50,
-                      Colors.green.shade50,
-                      Colors.teal.shade50,
-                      Colors.blue.shade50,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    tileMode: TileMode.mirror,
+              return Dismissible(
+                key: ValueKey(index),
+                // onDismissed: ,
+                dragStartBehavior: DragStartBehavior.down,
+                direction: DismissDirection.endToStart,
+                confirmDismiss: (DismissDirection dir) async => dir == DismissDirection.endToStart,
+                background: Container(
+                  width: 300,
+                  decoration: BoxDecoration(
+                    color: Colors.red[300],
                   ),
+                  child: const Icon(Icons.delete_forever),
                 ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: Theme.of(_).colorScheme.primary.withOpacity(0.5),
-                      child: Text(
-                        '${index + 1}',
-                        style: TextStyle(color: Theme.of(_).colorScheme.onPrimary),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    backgroundBlendMode: BlendMode.color,
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(10),
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.white,
+                        Colors.yellow.shade50,
+                        Colors.green.shade50,
+                        Colors.teal.shade50,
+                        Colors.blue.shade50,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      tileMode: TileMode.mirror,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Theme.of(_).colorScheme.primary.withOpacity(0.5),
+                        child: Text(
+                          '${index + 1}',
+                          style: TextStyle(color: Theme.of(_).colorScheme.onPrimary),
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: Text(
-                        controller.wordItems[index].word,
-                        overflow: TextOverflow.clip,
-                        maxLines: 1,
-                        softWrap: false,
-                        style: TextStyle(fontSize: 18, color: Theme.of(_).colorScheme.onPrimaryContainer),
+                      const SizedBox(
+                        width: 10,
                       ),
-                    ),
-                  ],
+                      Expanded(
+                        child: Text(
+                          controller.wordItems[index].word,
+                          overflow: TextOverflow.clip,
+                          maxLines: 1,
+                          softWrap: false,
+                          style: TextStyle(fontSize: 18, color: Theme.of(_).colorScheme.onPrimaryContainer),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
           );
         }),
       ),
-      // body: Center(
-      //   child: Column(
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     children: <Widget>[
-      //       Container(
-      //         padding: const EdgeInsets.all(16),
-      //         child: const Text(
-      //           'Recognized words:',
-      //           style: TextStyle(fontSize: 20.0),
-      //         ),
-      //       ),
-      //       Expanded(
-      //         child: Container(
-      //           padding: const EdgeInsets.all(16),
-      //           child: Text(
-      //             // If listening is active show the recognized words
-      //             _speechToText.isListening
-      //                 ? _lastWords
-      //             // If listening isn't active but could be tell the user
-      //             // how to start it, otherwise indicate that speech
-      //             // recognition is not yet ready or not supported on
-      //             // the target device
-      //                 : _speechEnabled
-      //                 ? 'Tap the microphone to start listening...'
-      //                 : 'Speech not available',
-      //           ),
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // ),
       floatingActionButton: FloatingActionButton(
+        // backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         onPressed: fabAction,
-        tooltip: 'Listen',
-        child: Icon(_speechToText.isNotListening ? Icons.mic_off : Icons.mic),
+        child: Icon(
+          _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+          color: _speechToText.isListening
+              ? Theme.of(context).colorScheme.onPrimaryContainer
+              : Theme.of(context).colorScheme.error,
+        ),
       ),
     );
   }
@@ -211,5 +203,6 @@ class MyHomePageState extends State<MyHomePage> {
     } else {
       _stopListening();
     }
+    setState(() {});
   }
 }

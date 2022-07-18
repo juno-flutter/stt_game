@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         scrollbarTheme: scrollbarThemeData(),
       ),
       themeMode: ThemeMode.system,
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }

@@ -29,7 +29,7 @@ class WordListController extends GetxController {
     '화양연화',
     '부산',
     '정형돈',
-    '동네방네떠들ABC',
+    '동네방네',
     '오비이락',
     '조중동',
     '지피지기',
@@ -61,6 +61,14 @@ class WordListController extends GetxController {
     }
     var tt = DateTime.now();
     wordItems.add(WordItem(word: word, createdTime: tt));
+    return true;
+  }
+
+  bool removeWordList ({required int index}) {
+    if (wordItems.length <= index) {
+      return false;
+    }
+    wordItems.removeAt(index);
     return true;
   }
 

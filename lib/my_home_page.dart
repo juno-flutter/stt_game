@@ -108,80 +108,116 @@ class MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      body: Container(
-        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-        child: GetX<WordListController>(builder: (controller) {
-          return GridView.builder(
-            shrinkWrap: true,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 2.5,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-            ),
-            itemCount: controller.wordItems.length,
-            itemBuilder: (_, index) {
-              return Dismissible(
-                key: ValueKey(index),
-                // onDismissed: ,
-                dragStartBehavior: DragStartBehavior.down,
-                direction: DismissDirection.endToStart,
-                confirmDismiss: (DismissDirection dir) async => dir == DismissDirection.endToStart,
-                background: Container(
-                  width: 300,
-                  decoration: BoxDecoration(
-                    color: Colors.red[300],
-                  ),
-                  child: const Icon(Icons.delete_forever),
-                ),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    backgroundBlendMode: BlendMode.color,
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(10),
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.white,
-                        Colors.yellow.shade50,
-                        Colors.green.shade50,
-                        Colors.teal.shade50,
-                        Colors.blue.shade50,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      tileMode: TileMode.mirror,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: Theme.of(_).colorScheme.primary.withOpacity(0.5),
-                        child: Text(
-                          '${index + 1}',
-                          style: TextStyle(color: Theme.of(_).colorScheme.onPrimary),
+      body: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+          child: GetX<WordListController>(builder: (controller) {
+            return GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 2.5,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemCount: controller.wordItems.length,
+              itemBuilder: (_, index) {
+                return GestureDetector(
+                  onLongPress: () {
+                    Get.defaultDialog(
+                      title: '\'${controller.wordItems[index].word}\'',
+                      content: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.error_outline),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text('이 낱말을 지우시겠습니까?'),
+                        ],
+                      ),
+                      actions: [
+                        ElevatedButton(
+                          onPressed: () {
+                            controller.removeWordList(index: index);
+                            Get.back();
+                          },
+                          child: const Text('OK'),
                         ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        ElevatedButton(
+                          onPressed: () => Get.back(),
+                          child: const Text('Cancel'),
+                        ),
+                      ],
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      backgroundBlendMode: BlendMode.color,
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(10),
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.white,
+                          Colors.yellow.shade50,
+                          Colors.green.shade50,
+                          Colors.teal.shade50,
+                          Colors.blue.shade50,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        tileMode: TileMode.mirror,
                       ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: Text(
+                    ),
+                    child: /*Dismissible(
+                        key: ValueKey(index),
+                        // onDismissed: ,
+                        dragStartBehavior: DragStartBehavior.down,
+                        direction: DismissDirection.endToStart,
+                        confirmDismiss: (DismissDirection dir) async => dir == DismissDirection.endToStart,
+                        background: Container(
+                          width: 300,
+                          decoration: BoxDecoration(
+                            color: Colors.red[300],
+                          ),
+                          child: const Icon(
+                            Icons.delete_rounded,
+                            size: 40,
+                          ),
+                        )*/
+                        Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Theme.of(_).colorScheme.primary.withOpacity(0.5),
+                          child: Text(
+                            '${index + 1}',
+                            style: TextStyle(color: Theme.of(_).colorScheme.onPrimary),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Text(
                           controller.wordItems[index].word,
                           overflow: TextOverflow.clip,
                           maxLines: 1,
                           softWrap: false,
                           style: TextStyle(fontSize: 18, color: Theme.of(_).colorScheme.onPrimaryContainer),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        }),
+                );
+              },
+            );
+          }),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         // backgroundColor: Theme.of(context).colorScheme.primaryContainer,

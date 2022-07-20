@@ -34,6 +34,12 @@ class WordListController extends GetxController {
     '조중동',
     '지피지기',
     '공공의적',
+    '듄',
+    '지하경제',
+    '용호상박',
+    '위화도회군',
+    '맥북',
+    '경상북도 울릉군',
   ];
 
   void fetchWordItems() {

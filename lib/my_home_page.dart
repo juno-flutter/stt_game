@@ -21,10 +21,24 @@ class MyHomePageState extends State<MyHomePage> {
 
   final wordListController = Get.put(WordListController());
 
+  late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
     _initSpeech();
+    _scrollController = ScrollController(
+      initialScrollOffset: 0.0,
+      keepScrollOffset: true,
+    );
+  }
+
+  void _toEnd() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.ease,
+    );
   }
 
   /// This has to happen only once per app
@@ -75,6 +89,8 @@ class MyHomePageState extends State<MyHomePage> {
               ),
             ],
           );
+        } else {
+          _toEnd();
         }
       }
     });
@@ -108,21 +124,23 @@ class MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      body: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-          child: GetX<WordListController>(builder: (controller) {
-            return GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 2.5,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-              ),
-              itemCount: controller.wordItems.length,
-              itemBuilder: (_, index) {
-                return GestureDetector(
+      body: Container(
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        child: GetX<WordListController>(builder: (controller) {
+          return GridView.builder(
+            controller: _scrollController,
+            // shrinkWrap: true,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 2.5,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemCount: controller.wordItems.length,
+            itemBuilder: (_, index) {
+              return Material(
+                child: InkWell(
+                  onTap: () {},
                   onLongPress: () {
                     Get.defaultDialog(
                       title: '\'${controller.wordItems[index].word}\'',
@@ -161,6 +179,23 @@ class MyHomePageState extends State<MyHomePage> {
                       backgroundBlendMode: BlendMode.color,
                       border: Border.all(color: Colors.grey.shade300),
                       borderRadius: BorderRadius.circular(10),
+                      // boxShadow: const [
+                      //   BoxShadow(
+                      //     color: Colors.green,
+                      //     offset: Offset(
+                      //       2.0,
+                      //       2.0,
+                      //     ),
+                      //     blurRadius: 2.0,
+                      //     spreadRadius: 2.0,
+                      //   ), //BoxShadow
+                      //   BoxShadow(
+                      //     color: Colors.white,
+                      //     offset: Offset(0.0, 0.0),
+                      //     blurRadius: 0.0,
+                      //     spreadRadius: 0.0,
+                      //   ),
+                      // ],
                       gradient: LinearGradient(
                         colors: [
                           Colors.white,
@@ -174,23 +209,24 @@ class MyHomePageState extends State<MyHomePage> {
                         tileMode: TileMode.mirror,
                       ),
                     ),
-                    child: /*Dismissible(
-                        key: ValueKey(index),
-                        // onDismissed: ,
-                        dragStartBehavior: DragStartBehavior.down,
-                        direction: DismissDirection.endToStart,
-                        confirmDismiss: (DismissDirection dir) async => dir == DismissDirection.endToStart,
-                        background: Container(
-                          width: 300,
-                          decoration: BoxDecoration(
-                            color: Colors.red[300],
-                          ),
-                          child: const Icon(
-                            Icons.delete_rounded,
-                            size: 40,
-                          ),
-                        )*/
-                        Row(
+
+                    /*Dismissible(
+                  key: ValueKey(index),
+                  // onDismissed: ,
+                  dragStartBehavior: DragStartBehavior.down,
+                  direction: DismissDirection.endToStart,
+                  confirmDismiss: (DismissDirection dir) async => dir == DismissDirection.endToStart,
+                  background: Container(
+                    width: 300,
+                    decoration: BoxDecoration(
+                      color: Colors.red[300],
+                    ),
+                    child: const Icon(
+                      Icons.delete_rounded,
+                      size: 40,
+                    ),
+                  )*/
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         CircleAvatar(
@@ -203,24 +239,29 @@ class MyHomePageState extends State<MyHomePage> {
                         const SizedBox(
                           width: 10,
                         ),
-                        Text(
-                          controller.wordItems[index].word,
-                          overflow: TextOverflow.clip,
-                          maxLines: 1,
-                          softWrap: false,
-                          style: TextStyle(fontSize: 18, color: Theme.of(_).colorScheme.onPrimaryContainer),
+                        Expanded(
+                          child: Text(
+                            controller.wordItems[index].word,
+                            overflow: TextOverflow.clip,
+                            maxLines: 1,
+                            softWrap: false,
+                            style: TextStyle(fontSize: 18, color: Theme.of(_).colorScheme.onPrimaryContainer),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                );
-              },
-            );
-          }),
-        ),
+                ),
+              );
+            },
+          );
+        }),
       ),
       floatingActionButton: FloatingActionButton(
-        // backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        // backgroundColor: Colors.transparent,
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.6),
+        // disabledElevation: 1,
+        elevation: 0,
         onPressed: fabAction,
         child: Icon(
           _speechToText.isNotListening ? Icons.mic_off : Icons.mic,

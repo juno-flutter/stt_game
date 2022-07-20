@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -172,6 +172,8 @@ class MyHomePageState extends State<MyHomePage> {
                       ],
                     );
                   },
+                  borderRadius: BorderRadius.circular(10),
+                  radius: 50.0,
                   child: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
@@ -227,7 +229,8 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
                   )*/
                     child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         CircleAvatar(
                           backgroundColor: Theme.of(_).colorScheme.primary.withOpacity(0.5),
@@ -240,12 +243,15 @@ class MyHomePageState extends State<MyHomePage> {
                           width: 10,
                         ),
                         Expanded(
-                          child: Text(
-                            controller.wordItems[index].word,
-                            overflow: TextOverflow.clip,
-                            maxLines: 1,
-                            softWrap: false,
-                            style: TextStyle(fontSize: 18, color: Theme.of(_).colorScheme.onPrimaryContainer),
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 3.0),
+                            child: Text(
+                              controller.wordItems[index].word,
+                              overflow: TextOverflow.fade,
+                              maxLines: 1,
+                              softWrap: false,
+                              style: TextStyle(fontSize: 18, color: Theme.of(_).colorScheme.onPrimaryContainer),
+                            ),
                           ),
                         ),
                       ],
@@ -257,17 +263,28 @@ class MyHomePageState extends State<MyHomePage> {
           );
         }),
       ),
-      floatingActionButton: FloatingActionButton(
-        // backgroundColor: Colors.transparent,
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.6),
-        // disabledElevation: 1,
-        elevation: 0,
-        onPressed: fabAction,
-        child: Icon(
-          _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
-          color: _speechToText.isListening
-              ? Theme.of(context).colorScheme.onPrimaryContainer
-              : Theme.of(context).colorScheme.error,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 30.0),
+        child: SizedBox(
+          height: 80.0,
+          width: 80.0,
+          child: FittedBox(
+            child: FloatingActionButton(
+              backgroundColor: Colors.transparent.withOpacity(0.2),
+              // backgroundColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.6),
+              // disabledElevation: 1,
+              elevation: 0,
+              onPressed: fabAction,
+              child: Icon(
+                _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+                color: _speechToText.isListening
+                    ? Theme.of(context).colorScheme.onPrimaryContainer
+                    : Theme.of(context).colorScheme.error,
+                size: 40,
+              ),
+            ),
+          ),
         ),
       ),
     );

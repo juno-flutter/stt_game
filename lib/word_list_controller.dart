@@ -40,8 +40,12 @@ class WordListController extends GetxController {
     '위화도회군',
     '맥북',
     '경상북도 울릉군',
-    'Notebook',
+    'Not123콩고',
     'MacBookAir-3',
+    'iPhone13',
+    '아이폰13',
+    'iPad',
+    '아이파드',
   ];
 
   void fetchWordItems() {

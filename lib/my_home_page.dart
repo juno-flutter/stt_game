@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:stt_game/color_schemes.g.dart';
 import 'package:stt_game/word_list_controller.dart';
 // import 'color_schemes.g.dart';
 
@@ -36,7 +37,7 @@ class MyHomePageState extends State<MyHomePage> {
   void _toEnd() {
     _scrollController.animateTo(
       _scrollController.position.maxScrollExtent,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.ease,
     );
   }
@@ -100,6 +101,9 @@ class MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 20.0,
+        scrolledUnderElevation: 20.0,
+        shadowColor: Colors.grey,
         title: const Center(
           child: Text(
             '낱말 게임',
@@ -125,7 +129,7 @@ class MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: Container(
-        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
         child: GetX<WordListController>(builder: (controller) {
           return GridView.builder(
             controller: _scrollController,
@@ -134,7 +138,7 @@ class MyHomePageState extends State<MyHomePage> {
               crossAxisCount: 2,
               childAspectRatio: 2.5,
               crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
+              mainAxisSpacing: 0,
             ),
             itemCount: controller.wordItems.length,
             itemBuilder: (_, index) {
@@ -175,35 +179,30 @@ class MyHomePageState extends State<MyHomePage> {
                   borderRadius: BorderRadius.circular(10),
                   radius: 50.0,
                   child: Container(
+                    margin: const EdgeInsets.only(bottom: 5.0, top: 5.0, left: 5, right: 5),
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.red,
-                      backgroundBlendMode: BlendMode.color,
-                      border: Border.all(color: Colors.grey.shade300),
+                      // color: Colors.yellow,
+                      // backgroundBlendMode: BlendMode.difference,
+                      border: Border.all(color: Colors.blue.shade300),
                       borderRadius: BorderRadius.circular(10),
-                      // boxShadow: const [
-                      //   BoxShadow(
-                      //     color: Colors.green,
-                      //     offset: Offset(
-                      //       2.0,
-                      //       2.0,
-                      //     ),
-                      //     blurRadius: 2.0,
-                      //     spreadRadius: 2.0,
-                      //   ), //BoxShadow
-                      //   BoxShadow(
-                      //     color: Colors.white,
-                      //     offset: Offset(0.0, 0.0),
-                      //     blurRadius: 0.0,
-                      //     spreadRadius: 0.0,
-                      //   ),
-                      // ],
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.grey,
+                          offset: Offset(2.0, 2.0),
+                          blurRadius: 2.0,
+                          spreadRadius: 0.5,
+                        ),
+                      ],
                       gradient: LinearGradient(
                         colors: [
-                          Colors.white,
-                          Colors.yellow.shade50,
-                          Colors.green.shade50,
-                          Colors.teal.shade50,
+                          // Colors.white,
+                          // Colors.yellow.shade50,
+                          // Colors.blue.shade50,
+                          // Colors.orange.shade50,
+                          Colors.deepOrange.shade50,
+                          // Colors.pink.shade50,
+                          // Colors.lightBlue.shade50,
                           Colors.blue.shade50,
                         ],
                         begin: Alignment.topLeft,
@@ -233,6 +232,7 @@ class MyHomePageState extends State<MyHomePage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         CircleAvatar(
+                          radius: 20,
                           backgroundColor: Theme.of(_).colorScheme.primary.withOpacity(0.5),
                           child: Text(
                             '${index + 1}',
@@ -250,7 +250,8 @@ class MyHomePageState extends State<MyHomePage> {
                               overflow: TextOverflow.fade,
                               maxLines: 1,
                               softWrap: false,
-                              style: TextStyle(fontSize: 18, color: Theme.of(_).colorScheme.onPrimaryContainer),
+                              style: TextStyle(fontSize: 18,
+                                  color: lightColorScheme.onPrimaryContainer),
                             ),
                           ),
                         ),
@@ -267,8 +268,8 @@ class MyHomePageState extends State<MyHomePage> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 30.0),
         child: SizedBox(
-          height: 80.0,
-          width: 80.0,
+          height: 70.0,
+          width: 70.0,
           child: FittedBox(
             child: FloatingActionButton(
               backgroundColor: Colors.transparent.withOpacity(0.2),
@@ -292,6 +293,9 @@ class MyHomePageState extends State<MyHomePage> {
 
   void fabAction() {
     // If not yet listening for speech start, otherwise stop
+    if (ThemeMode.system == ThemeMode.dark) {
+
+    }
     if (_speechToText.isNotListening) {
       _startListening();
     } else {

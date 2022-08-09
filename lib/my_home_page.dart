@@ -106,9 +106,10 @@ class MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 20.0,
-        scrolledUnderElevation: 20.0,
+        // elevation: 20.0,
+        // scrolledUnderElevation: 10.0,
         shadowColor: Colors.grey,
+        // backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
         title: const Center(
           child: Text(
             '낱말 게임',
@@ -178,8 +179,8 @@ class MyHomePageState extends State<MyHomePage> {
                 maxCrossAxisExtent: 300,
                 mainAxisSpacing: 5,
                 crossAxisSpacing: 5,
-                childAspectRatio: 2.7,
                 mainAxisExtent: 70,
+                // childAspectRatio: 3,
               ),
               // const SliverGridDelegateWithFixedCrossAxisCount(
               //   crossAxisCount: 2,
@@ -191,9 +192,11 @@ class MyHomePageState extends State<MyHomePage> {
               itemCount: controller.wordItems.length,
               itemBuilder: (_, index) {
                 return Card(
-                  margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                  margin: const EdgeInsets.fromLTRB(5, 0, 5, 10),
                   elevation: 8,
                   shadowColor: Colors.grey.shade400,
+                  color: Colors.grey.shade50,
+                  surfaceTintColor: Colors.teal.shade200,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                     side: BorderSide(color: Colors.grey.shade300, width: 2.0, style: BorderStyle.solid),
@@ -211,6 +214,7 @@ class MyHomePageState extends State<MyHomePage> {
                     // ),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
+                      // color: Colors.teal,
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.center,

@@ -16,6 +16,9 @@ class WordListController extends GetxController {
 
   bool get isSortByTime => _isSortByTime.isTrue;
 
+  var editWord = "".obs;
+  var indexEditWord = 0.obs;
+
 
   @override
   void onInit() {

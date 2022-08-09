@@ -1,11 +1,14 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+
 // import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:stt_game/color_schemes.g.dart';
 import 'package:stt_game/word_list_controller.dart';
+
+import 'edit_word.dart';
 // import 'color_schemes.g.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -35,6 +38,7 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   void _toEnd() {
+    // _scrollController.jumpTo(_scrollController.position.extentAfter);
     _scrollController.animateTo(
       _scrollController.position.maxScrollExtent,
       duration: const Duration(milliseconds: 300),
@@ -113,7 +117,41 @@ class MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
             onPressed: () {
-              wordListController.wordItems.clear();
+              Get.defaultDialog(
+                title: "",
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.error_outline),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      '모든 낱말을 지우시겠습니까?',
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      wordListController.wordItems.clear();
+                      Get.back();
+                    },
+                    child: const Text('OK'),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Get.back(),
+                    child: const Text('Cancel'),
+                  ),
+                ],
+              );
+              // wordListController.wordItems.clear();
             },
             icon: const Icon(Icons.delete_outline_rounded),
           ),
@@ -129,111 +167,133 @@ class MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: Container(
-        padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+        // margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
         child: GetX<WordListController>(builder: (controller) {
           return GridView.builder(
             controller: _scrollController,
-            // shrinkWrap: true,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 300,
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 5,
               childAspectRatio: 2.5,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 0,
+              // mainAxisExtent: 100,
             ),
+            // const SliverGridDelegateWithFixedCrossAxisCount(
+            //   crossAxisCount: 2,
+            //   childAspectRatio: 2.5,
+            //   crossAxisSpacing: 10,
+            //   mainAxisSpacing: 5,
+            //   // mainAxisExtent: 100,
+            // ),
             itemCount: controller.wordItems.length,
             itemBuilder: (_, index) {
-              return Material(
-                child: InkWell(
-                  onTap: () {},
-                  onLongPress: () {
-                    Get.defaultDialog(
-                      title: '\'${controller.wordItems[index].word}\'',
-                      content: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.error_outline),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text('이 낱말을 지우시겠습니까?'),
-                        ],
+              return Dismissible(
+                key: Key(controller.wordItems[index].word),
+                onDismissed: (dd) {
+                  controller.removeWordList(index: index);
+                },
+                dragStartBehavior: DragStartBehavior.start,
+                direction: DismissDirection.endToStart,
+                confirmDismiss: (DismissDirection dir) async => dir == DismissDirection.endToStart,
+                background: Container(
+                  margin: const EdgeInsets.only(bottom: 0, top: 10, left: 0, right: 0),
+                  padding: const EdgeInsets.all(10),
+                  // width: 300,
+                  decoration: BoxDecoration(
+                    color: Colors.red[300],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  // alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(
+                        Icons.delete_rounded,
+                        size: 40,
+                        // color: Colors.white,
                       ),
-                      actions: [
-                        ElevatedButton(
-                          onPressed: () {
-                            controller.removeWordList(index: index);
-                            Get.back();
-                          },
-                          child: const Text('OK'),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        ElevatedButton(
-                          onPressed: () => Get.back(),
-                          child: const Text('Cancel'),
-                        ),
-                      ],
+                      Text(
+                        'Delete',
+                        // style: TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+                child: InkWell(
+                  // onTap: () {},
+                  splashColor: Colors.grey.shade300,
+                  onLongPress: () async {
+                    controller.editWord.value = controller.wordItems[index].word;
+                    // controller.indexEditWord.value = index;
+                    var text = await Get.to(
+                      () => const EditWord(),
+                      transition: Transition.leftToRight,
+                      curve: Curves.easeInOutExpo,
+                      duration: const Duration(milliseconds: 500),
                     );
+                    wordListController.wordItems[index].word = text;
+                    setState(() {});
                   },
                   borderRadius: BorderRadius.circular(10),
-                  radius: 50.0,
+                  radius: 70.0,
                   child: Container(
-                    margin: const EdgeInsets.only(bottom: 5.0, top: 5.0, left: 5, right: 5),
+                    margin: const EdgeInsets.only(bottom: 0, top: 10, left: 10, right: 10),
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       // color: Colors.yellow,
                       // backgroundBlendMode: BlendMode.difference,
                       border: Border.all(color: Colors.blue.shade300),
                       borderRadius: BorderRadius.circular(10),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.grey,
-                          offset: Offset(2.0, 2.0),
-                          blurRadius: 2.0,
-                          spreadRadius: 0.5,
-                        ),
-                      ],
-                      gradient: LinearGradient(
-                        colors: [
-                          // Colors.white,
-                          // Colors.yellow.shade50,
-                          // Colors.blue.shade50,
-                          // Colors.orange.shade50,
-                          Colors.deepOrange.shade50,
-                          // Colors.pink.shade50,
-                          // Colors.lightBlue.shade50,
-                          Colors.blue.shade50,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        tileMode: TileMode.mirror,
-                      ),
+                      // shape: BoxShape.rectangle,
+                      // boxShadow: const [
+                      //   BoxShadow(
+                      //     color: Colors.grey,
+                      //     offset: Offset(2.0, 2.0),
+                      //     blurRadius: 2.0,
+                      //     spreadRadius: 0.5,
+                      //   ),
+                      // ],
+                      // gradient: LinearGradient(
+                      //   colors: [
+                      //     // Colors.white,
+                      //     // Colors.yellow.shade50,
+                      //     // Colors.blue.shade50,
+                      //     // Colors.orange.shade50,
+                      //     Colors.deepOrange.shade50,
+                      //     // Colors.pink.shade50,
+                      //     // Colors.lightBlue.shade50,
+                      //     Colors.blue.shade50,
+                      //   ],
+                      //   begin: Alignment.topLeft,
+                      //   end: Alignment.bottomRight,
+                      //   tileMode: TileMode.mirror,
+                      // ),
                     ),
 
                     /*Dismissible(
-                  key: ValueKey(index),
-                  // onDismissed: ,
-                  dragStartBehavior: DragStartBehavior.down,
-                  direction: DismissDirection.endToStart,
-                  confirmDismiss: (DismissDirection dir) async => dir == DismissDirection.endToStart,
-                  background: Container(
-                    width: 300,
-                    decoration: BoxDecoration(
-                      color: Colors.red[300],
-                    ),
-                    child: const Icon(
-                      Icons.delete_rounded,
-                      size: 40,
-                    ),
-                  )*/
+                      key: ValueKey(index),
+                      // onDismissed: ,
+                      dragStartBehavior: DragStartBehavior.down,
+                      direction: DismissDirection.endToStart,
+                      confirmDismiss: (DismissDirection dir) async => dir == DismissDirection.endToStart,
+                      background: Container(
+                        width: 300,
+                        decoration: BoxDecoration(
+                          color: Colors.red[300],
+                        ),
+                        child: const Icon(
+                          Icons.delete_rounded,
+                          size: 40,
+                        ),
+                      )*/
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         CircleAvatar(
                           radius: 20,
-                          backgroundColor: Theme.of(_).colorScheme.primary.withOpacity(0.5),
+                          // backgroundColor: Theme.of(_).colorScheme.primary.withOpacity(0.5),
                           child: Text(
                             '${index + 1}',
                             style: TextStyle(color: Theme.of(_).colorScheme.onPrimary),
@@ -250,8 +310,7 @@ class MyHomePageState extends State<MyHomePage> {
                               overflow: TextOverflow.fade,
                               maxLines: 1,
                               softWrap: false,
-                              style: TextStyle(fontSize: 18,
-                                  color: lightColorScheme.onPrimaryContainer),
+                              style: TextStyle(fontSize: 18, color: lightColorScheme.onPrimaryContainer),
                             ),
                           ),
                         ),
@@ -293,9 +352,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   void fabAction() {
     // If not yet listening for speech start, otherwise stop
-    if (ThemeMode.system == ThemeMode.dark) {
-
-    }
+    if (ThemeMode.system == ThemeMode.dark) {}
     if (_speechToText.isNotListening) {
       _startListening();
     } else {

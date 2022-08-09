@@ -1,7 +1,7 @@
 
 class WordItem {
-  final String word;
-  final DateTime createdTime;
+  String word;
+  DateTime createdTime;
 
   WordItem({
     required this.word,

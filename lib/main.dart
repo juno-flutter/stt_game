@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'color_schemes.g.dart';
 import 'my_home_page.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 
@@ -10,7 +9,7 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  ScrollbarThemeData scrollbarThemeData(){
+  ScrollbarThemeData scrollbarThemeData() {
     return ScrollbarThemeData(
         thumbVisibility: MaterialStateProperty.all(true),
         thickness: MaterialStateProperty.all(10),
@@ -18,6 +17,7 @@ class MyApp extends StatelessWidget {
         radius: const Radius.circular(10),
         minThumbLength: 50);
   }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -27,18 +27,23 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         // primarySwatch: Colors.blue,
         useMaterial3: true,
-        colorScheme: lightColorScheme,
+        // colorScheme: lightColorScheme,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.teal,
+          brightness: Brightness.light,
+        ),
         scrollbarTheme: scrollbarThemeData(),
       ),
       darkTheme: ThemeData(
         // primarySwatch: Colors.blue,
         useMaterial3: true,
-        colorScheme: darkColorScheme,
-        scrollbarTheme: scrollbarThemeData(),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.teal,
+          brightness: Brightness.dark,
+        ),
       ),
       themeMode: ThemeMode.system,
       home: const MyHomePage(),
     );
   }
 }
-

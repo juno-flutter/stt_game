@@ -19,7 +19,6 @@ class WordListController extends GetxController {
   var editWord = "".obs;
   var indexEditWord = 0.obs;
 
-
   @override
   void onInit() {
     super.onInit();
@@ -55,7 +54,7 @@ class WordListController extends GetxController {
     var wordsResult = List.generate(
       sampleWordList.length,
       (index) {
-        Timer(const Duration(milliseconds: 100), () {});
+        Timer(const Duration(milliseconds: 1), () {});
         var time = DateTime.now();
         return WordItem(
           word: sampleWordList[index],
@@ -66,12 +65,13 @@ class WordListController extends GetxController {
     wordItems.assignAll(wordsResult);
   }
 
-  bool addWordList ({required String word}) {
+  bool addWordList({required String word}) {
     int index = wordItems.indexWhere((p0) => p0.word == word);
     if (kDebugMode) {
       print('\'$word\' 검색 결과는 $index');
     }
-    if (-1 < index) { // 입력받은 문자열이 이미 등록되어 있는가?
+    if (-1 < index) {
+      // 입력받은 문자열이 이미 등록되어 있는가?
       return false;
     }
     var tt = DateTime.now();
@@ -79,7 +79,7 @@ class WordListController extends GetxController {
     return true;
   }
 
-  bool removeWordList ({required int index}) {
+  bool removeWordList({required int index}) {
     if (wordItems.length <= index) {
       return false;
     }
@@ -87,7 +87,7 @@ class WordListController extends GetxController {
     return true;
   }
 
-  void sortWordList(){
+  void sortWordList() {
     _isSortByTime.isTrue ? sortByTime() : sortByAlpha();
   }
 

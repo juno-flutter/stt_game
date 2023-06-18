@@ -1,11 +1,11 @@
-import 'dart:html';
+// import 'dart:html';
 import 'package:get/get.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 class SstController extends GetxController {
   final _speechToText = SpeechToText().obs;
   final _speechEnabled = false.obs;
-  final _lastWord = '';
+  // final _lastWord = '';
   SpeechResultListener onSpeechResult;
 
   SstController({required this.onSpeechResult});

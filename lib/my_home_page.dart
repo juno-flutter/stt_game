@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
-import 'package:stt_game/color_schemes.g.dart';
 import 'package:stt_game/word_list_controller.dart';
 
 import 'edit_word.dart';
@@ -78,8 +77,8 @@ class MyHomePageState extends State<MyHomePage> {
         if (ret == false) {
           Get.defaultDialog(
             title: '\'$_lastWords\'',
-            content: Row(
-              children: const [
+            content: const Row(
+              children: [
                 Icon(Icons.error_outline),
                 SizedBox(
                   width: 2,
@@ -119,9 +118,9 @@ class MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               Get.defaultDialog(
                 title: "",
-                content: Row(
+                content: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(Icons.error_outline),
                     SizedBox(
                       width: 10,
@@ -161,8 +160,7 @@ class MyHomePageState extends State<MyHomePage> {
             wordListController.isSortByTime = !wordListController.isSortByTime;
           },
           icon: GetX<WordListController>(
-            builder: (_) =>
-                _.isSortByTime ? const Icon(Icons.access_time_rounded) : const Icon(Icons.sort_by_alpha_rounded),
+            builder: (_) => _.isSortByTime ? const Icon(Icons.access_time_rounded) : const Icon(Icons.sort_by_alpha_rounded),
           ),
         ),
       ),
@@ -170,154 +168,174 @@ class MyHomePageState extends State<MyHomePage> {
         padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
         // margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
         child: GetX<WordListController>(builder: (controller) {
+          int countWords = controller.wordItems.length;
           return GridView.builder(
             controller: _scrollController,
+            physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 300,
-              mainAxisSpacing: 5,
-              crossAxisSpacing: 5,
-              childAspectRatio: 2.5,
+              maxCrossAxisExtent: 200,
+              mainAxisSpacing: 0,
+              crossAxisSpacing: 10,
+              childAspectRatio: 2.4,
               // mainAxisExtent: 100,
             ),
-            // const SliverGridDelegateWithFixedCrossAxisCount(
+            // gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             //   crossAxisCount: 2,
             //   childAspectRatio: 2.5,
             //   crossAxisSpacing: 10,
-            //   mainAxisSpacing: 5,
-            //   // mainAxisExtent: 100,
+            //   mainAxisSpacing: 0,
+            //   // mainAxisExtent: 65,
             // ),
-            itemCount: controller.wordItems.length,
+            itemCount: countWords,
             itemBuilder: (_, index) {
-              return Dismissible(
-                key: Key(controller.wordItems[index].word),
-                onDismissed: (dd) {
-                  controller.removeWordList(index: index);
-                },
-                dragStartBehavior: DragStartBehavior.start,
-                direction: DismissDirection.endToStart,
-                confirmDismiss: (DismissDirection dir) async => dir == DismissDirection.endToStart,
-                background: Container(
-                  margin: const EdgeInsets.only(bottom: 0, top: 10, left: 0, right: 0),
-                  padding: const EdgeInsets.all(10),
-                  // width: 300,
-                  decoration: BoxDecoration(
-                    color: Colors.red[300],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  // alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(
-                        Icons.delete_rounded,
-                        size: 40,
-                        // color: Colors.white,
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // SizedBox(
+                  //   height: index < 2 ? 10 : 0,
+                  // ),
+                  Dismissible(
+                    key: Key(controller.wordItems[index].word),
+                    onDismissed: (dd) {
+                      controller.removeWordList(index: index);
+                    },
+                    dragStartBehavior: DragStartBehavior.start,
+                    direction: DismissDirection.endToStart,
+                    confirmDismiss: (DismissDirection dir) async => dir == DismissDirection.endToStart,
+                    background: Container(
+                      // margin: const EdgeInsets.only(bottom: 0, top: 10, left: 0, right: 0),
+                      // padding: const EdgeInsets.all(10),
+                      // width: 300,
+                      decoration: BoxDecoration(
+                        color: Colors.red[300],
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      Text(
-                        'Delete',
-                        // style: TextStyle(color: Colors.white),
+                      // alignment: Alignment.center,
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.delete_rounded,
+                            size: 40,
+                            // color: Colors.white,
+                          ),
+                          Text(
+                            'Delete',
+                            // style: TextStyle(color: Colors.white),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                child: InkWell(
-                  // onTap: () {},
-                  splashColor: Colors.grey.shade300,
-                  onLongPress: () async {
-                    controller.editWord.value = controller.wordItems[index].word;
-                    // controller.indexEditWord.value = index;
-                    var text = await Get.to(
-                      () => const EditWord(),
-                      transition: Transition.leftToRight,
-                      curve: Curves.easeInOutExpo,
-                      duration: const Duration(milliseconds: 500),
-                    );
-                    wordListController.wordItems[index].word = text;
-                    setState(() {});
-                  },
-                  borderRadius: BorderRadius.circular(10),
-                  radius: 70.0,
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 0, top: 10, left: 10, right: 10),
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      // color: Colors.yellow,
-                      // backgroundBlendMode: BlendMode.difference,
-                      border: Border.all(color: Colors.blue.shade300),
+                    ),
+                    child: InkWell(
+                      // onTap: () {},
+                      splashColor: Colors.grey.shade300,
+                      onLongPress: () async {
+                        controller.editWord.value = controller.wordItems[index].word;
+                        // controller.indexEditWord.value = index;
+                        var text = await Get.to(
+                          () => const EditWord(),
+                          transition: Transition.leftToRight,
+                          curve: Curves.easeInOutExpo,
+                          duration: const Duration(milliseconds: 500),
+                        );
+                        if (text != null) {
+                          // '뒤로가기' 기능이 실행되면 null을 리턴값으로 받으므로 예외처리 함.
+                          wordListController.wordItems[index].word = text;
+                          setState(() {});
+                        }
+                      },
                       borderRadius: BorderRadius.circular(10),
-                      // shape: BoxShape.rectangle,
-                      // boxShadow: const [
-                      //   BoxShadow(
-                      //     color: Colors.grey,
-                      //     offset: Offset(2.0, 2.0),
-                      //     blurRadius: 2.0,
-                      //     spreadRadius: 0.5,
-                      //   ),
-                      // ],
-                      // gradient: LinearGradient(
-                      //   colors: [
-                      //     // Colors.white,
-                      //     // Colors.yellow.shade50,
-                      //     // Colors.blue.shade50,
-                      //     // Colors.orange.shade50,
-                      //     Colors.deepOrange.shade50,
-                      //     // Colors.pink.shade50,
-                      //     // Colors.lightBlue.shade50,
-                      //     Colors.blue.shade50,
-                      //   ],
-                      //   begin: Alignment.topLeft,
-                      //   end: Alignment.bottomRight,
-                      //   tileMode: TileMode.mirror,
-                      // ),
-                    ),
-
-                    /*Dismissible(
-                      key: ValueKey(index),
-                      // onDismissed: ,
-                      dragStartBehavior: DragStartBehavior.down,
-                      direction: DismissDirection.endToStart,
-                      confirmDismiss: (DismissDirection dir) async => dir == DismissDirection.endToStart,
-                      background: Container(
-                        width: 300,
+                      radius: 70.0,
+                      child: Container(
+                        // margin: const EdgeInsets.only(bottom: 0, top: 10, left: 10, right: 10),
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: Colors.red[300],
+                          // color: Colors.yellow,
+                          // backgroundBlendMode: BlendMode.difference,
+                          // border: Border.all(color: Colors.blue.shade300),
+                          border: Border.all(color: Theme.of(context).colorScheme.primary),
+                          borderRadius: BorderRadius.circular(10),
+                          // shape: BoxShape.rectangle,
+                          // boxShadow: const [
+                          //   BoxShadow(
+                          //     color: Colors.grey,
+                          //     offset: Offset(2.0, 2.0),
+                          //     blurRadius: 2.0,
+                          //     spreadRadius: 0.5,
+                          //   ),
+                          // ],
+                          // gradient: LinearGradient(
+                          //   colors: [
+                          //     // Colors.white,
+                          //     // Colors.yellow.shade50,
+                          //     // Colors.blue.shade50,
+                          //     // Colors.orange.shade50,
+                          //     Colors.deepOrange.shade50,
+                          //     // Colors.pink.shade50,
+                          //     // Colors.lightBlue.shade50,
+                          //     Colors.blue.shade50,
+                          //   ],
+                          //   begin: Alignment.topLeft,
+                          //   end: Alignment.bottomRight,
+                          //   tileMode: TileMode.mirror,
+                          // ),
                         ),
-                        child: const Icon(
-                          Icons.delete_rounded,
-                          size: 40,
-                        ),
-                      )*/
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                          radius: 20,
-                          // backgroundColor: Theme.of(_).colorScheme.primary.withOpacity(0.5),
-                          child: Text(
-                            '${index + 1}',
-                            style: TextStyle(color: Theme.of(_).colorScheme.onPrimary),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 3.0),
-                            child: Text(
-                              controller.wordItems[index].word,
-                              overflow: TextOverflow.fade,
-                              maxLines: 1,
-                              softWrap: false,
-                              style: TextStyle(fontSize: 18, color: lightColorScheme.onPrimaryContainer),
+
+                        /*Dismissible(
+                          key: ValueKey(index),
+                          // onDismissed: ,
+                          dragStartBehavior: DragStartBehavior.down,
+                          direction: DismissDirection.endToStart,
+                          confirmDismiss: (DismissDirection dir) async => dir == DismissDirection.endToStart,
+                          background: Container(
+                            width: 300,
+                            decoration: BoxDecoration(
+                              color: Colors.red[300],
                             ),
-                          ),
+                            child: const Icon(
+                              Icons.delete_rounded,
+                              size: 40,
+                            ),
+                          )*/
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              // backgroundColor: Theme.of(_).colorScheme.primary.withOpacity(0.5),
+                              child: Text(
+                                '${index + 1}',
+                                // style: TextStyle(color: Theme.of(_).colorScheme.onPrimaryContainer),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 3.0),
+                                child: Text(
+                                  controller.wordItems[index].word,
+                                  overflow: TextOverflow.fade,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    // color: Theme.of(_).colorScheme.onPrimaryContainer,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
+                  // SizedBox(
+                  //   height: index < (countWords - 2) ? 0 : 10,
+                  // ),
+                ],
               );
             },
           );
@@ -331,16 +349,17 @@ class MyHomePageState extends State<MyHomePage> {
           width: 70.0,
           child: FittedBox(
             child: FloatingActionButton(
-              backgroundColor: Colors.transparent.withOpacity(0.2),
-              // backgroundColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.6),
-              // disabledElevation: 1,
-              elevation: 0,
+              // backgroundColor: Colors.transparent.withOpacity(0.8),
+              backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+              // disabledElevation: 10,
+              elevation: 10,
               onPressed: fabAction,
               child: Icon(
+                // Icons.mic,
                 _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
                 color: _speechToText.isListening
-                    ? Theme.of(context).colorScheme.onPrimaryContainer
-                    : Theme.of(context).colorScheme.error,
+                    ? Theme.of(context).colorScheme.error
+                    : Theme.of(context).colorScheme.onTertiaryContainer,
                 size: 40,
               ),
             ),
@@ -352,12 +371,14 @@ class MyHomePageState extends State<MyHomePage> {
 
   void fabAction() {
     // If not yet listening for speech start, otherwise stop
-    if (ThemeMode.system == ThemeMode.dark) {}
-    if (_speechToText.isNotListening) {
-      _startListening();
-    } else {
-      _stopListening();
-    }
-    setState(() {});
+    // if (ThemeMode.system == ThemeMode.dark) {}
+
+    setState(() {
+      if (_speechToText.isNotListening) {
+        _startListening();
+      } else {
+        _stopListening();
+      }
+    });
   }
 }

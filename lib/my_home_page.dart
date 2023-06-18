@@ -57,6 +57,7 @@ class MyHomePageState extends State<MyHomePage> {
       cancelOnError: true,
       partialResults: false,
     );
+    setState(() {});
   }
 
   /// Manually stop the active speech recognition session
@@ -65,6 +66,7 @@ class MyHomePageState extends State<MyHomePage> {
   /// listen method.
   void _stopListening() async {
     await _speechToText.stop();
+    setState(() {});
   }
 
   /// This is the callback that the SpeechToText plugin calls when
@@ -355,8 +357,8 @@ class MyHomePageState extends State<MyHomePage> {
               elevation: 10,
               onPressed: fabAction,
               child: Icon(
-                // Icons.mic,
-                _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+                Icons.mic,
+                // _speechToText.isListening ? Icons.mic : Icons.mic_off,
                 color: _speechToText.isListening
                     ? Theme.of(context).colorScheme.error
                     : Theme.of(context).colorScheme.onTertiaryContainer,
@@ -373,12 +375,11 @@ class MyHomePageState extends State<MyHomePage> {
     // If not yet listening for speech start, otherwise stop
     // if (ThemeMode.system == ThemeMode.dark) {}
 
-    setState(() {
-      if (_speechToText.isNotListening) {
-        _startListening();
-      } else {
-        _stopListening();
-      }
-    });
+    if (_speechToText.isNotListening) {
+      _startListening();
+    } else {
+      _stopListening();
+    }
+    // setState(() {});
   }
 }
